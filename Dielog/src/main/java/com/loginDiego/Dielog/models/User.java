@@ -13,7 +13,7 @@ import javax.validation.constraints.NotBlank;
 
 @Entity
 @Table(name = "usuarios")
-@ToString @EqualsAndHashCode
+@ToString
 public class User {
 
     @Id

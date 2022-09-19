@@ -1,11 +1,10 @@
-package com.loginDiego.Dielog.repository;
+package com.loginDiego.Dielog.repository.impl;
 
 import com.loginDiego.Dielog.models.User;
+import com.loginDiego.Dielog.repository.UserRepository;
 import de.mkammerer.argon2.Argon2;
 import de.mkammerer.argon2.Argon2Factory;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
@@ -15,7 +14,7 @@ import java.util.Optional;
 
 @Repository
 @Transactional
-public class UserRepositoryImp implements UserRepository{
+public class UserRepositoryImp implements UserRepository {
 
     //Se tiene que importar
     @PersistenceContext
