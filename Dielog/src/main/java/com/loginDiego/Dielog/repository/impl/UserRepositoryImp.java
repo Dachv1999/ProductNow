@@ -3,6 +3,7 @@ package com.loginDiego.Dielog.repository;
 import com.loginDiego.Dielog.models.User;
 import de.mkammerer.argon2.Argon2;
 import de.mkammerer.argon2.Argon2Factory;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

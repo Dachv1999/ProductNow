@@ -1,12 +1,10 @@
 package com.loginDiego.Dielog.controllers;
 
 import com.loginDiego.Dielog.models.User;
-import com.loginDiego.Dielog.repository.UserRepository;
+import com.loginDiego.Dielog.service.UserService;
 import com.loginDiego.Dielog.utils.JWTUtil;
 import com.sun.istack.NotNull;
-import de.mkammerer.argon2.Argon2;
-import de.mkammerer.argon2.Argon2Factory;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,20 +15,18 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/users")
+@AllArgsConstructor
 public class UserController {
 
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private JWTUtil jwtUtil;
+    private final UserService userService;
+    private final JWTUtil jwtUtil;
 
     @GetMapping
     public ResponseEntity<List<User>> getAll(@RequestHeader(value = "Authorization") String token){
         if(!validateToken(token)){
             return new ResponseEntity<>(HttpStatus.NON_AUTHORITATIVE_INFORMATION);
         }
-        return new ResponseEntity<>(userRepository.getAll(), HttpStatus.OK);
+        return new ResponseEntity<>(userService.getAll(), HttpStatus.OK);
     }
 
     @GetMapping("/{userId}")
@@ -45,7 +41,7 @@ public class UserController {
         if(!validateToken(token)){
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
-        return userRepository.getById(userId)
+        return userService.getById(userId)
                 .map(user -> new ResponseEntity<>(user, HttpStatus.OK))
                 .orElseThrow(() -> new EntityNotFoundException("El usuario con el id correspondiente no existe"));
 
@@ -54,11 +50,7 @@ public class UserController {
     @PostMapping
     public ResponseEntity<User>  create(@Valid @RequestBody User user){
 
-        Argon2 argon2 = Argon2Factory.create(Argon2Factory.Argon2Types.ARGON2id);
-        String hash = argon2.hash(1,1024,1,user.getPassword());
-
-        user.setPassword(hash);
-        return userRepository.create(user).map(user1 -> new ResponseEntity<>(user1, HttpStatus.CREATED))
+        return userService.create(user).map(user1 -> new ResponseEntity<>(user1, HttpStatus.CREATED))
                 .orElse(new ResponseEntity<>(HttpStatus.BAD_REQUEST));
     }
 
@@ -68,10 +60,10 @@ public class UserController {
         if(!validateToken(token)){
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
-        if((userRepository.getById(userId)) != null) {
+        if((userService.getById(userId)) != null) {
             throw new EntityNotFoundException("No hay Un user con ese id");
         }else{
-            if(userRepository.delete(userId)){
+            if(userService.delete(userId)){
                 return new ResponseEntity<>(HttpStatus.OK);
             }else {
                 return new ResponseEntity<>(HttpStatus.FORBIDDEN);

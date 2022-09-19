@@ -10,8 +10,8 @@ services:
     ports:
       - "3306:3306"
     volumes:
-      #- dbdata:/var/lib/mysql
-      - ./mysql-volume:/data/db
-networks:
-  mysql_network:
-    name: mysql_host
+      - dbdata:/var/lib/mysql
+      #- ./mysql-volume:/data/db
+      #- E:/nuevo Sprint/ProductNow/Dielog/Mysql/db_mysql:/shared
+volumes:
+  dbdata:
