@@ -18,7 +18,7 @@ public class UserRepositoryImp implements UserRepository {
 
     //Se tiene que importar
     @PersistenceContext
-    EntityManager em;
+    private EntityManager em;
 
     @Override
     public List<User> getAll() {

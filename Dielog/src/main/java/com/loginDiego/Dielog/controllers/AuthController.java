@@ -24,7 +24,7 @@ public class AuthController {
     public String login(@RequestBody User user){
         User userLogeado = userRepository.getValidUser(user);
         if(userLogeado != null){
-            return jwtUtil.create(String.valueOf(userLogeado.getId()), userLogeado.getEmail());
+            return jwtUtil.create(String.valueOf(userLogeado.getId()), userLogeado.getType());
         }else{
             return "FAIL";
         }
