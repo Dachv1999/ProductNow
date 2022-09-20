@@ -1,5 +1,6 @@
 package com.loginDiego.Dielog.controllers.impl;
 
+import com.loginDiego.Dielog.controllers.AuthController;
 import com.loginDiego.Dielog.controllers.ProductController;
 import com.loginDiego.Dielog.models.Product;
 import com.loginDiego.Dielog.service.ProductService;
@@ -21,13 +22,13 @@ public class ProductControllerImpl implements ProductController {
 
     //properties
     private final ProductService productService;
-    private final JWTUtil jwtUtil;
+    private AuthController authController;
     //
 
     @GetMapping
     @Override
     public ResponseEntity<List<Product>> getAll(@RequestHeader(value = "Authorization") String token){
-        if(!validateToken(token)){
+        if(!authController.validateTokenUser(token)){
             return new ResponseEntity<>(HttpStatus.NON_AUTHORITATIVE_INFORMATION);
         }
         return new ResponseEntity<>(productService.getAll(), HttpStatus.OK);
@@ -43,7 +44,7 @@ public class ProductControllerImpl implements ProductController {
         //}else{
         //    return user;
         //}
-        if(!validateToken(token)){
+        if(!authController.validateTokenUser(token)){
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
         return productService.getById(productId)
@@ -54,8 +55,11 @@ public class ProductControllerImpl implements ProductController {
 
     @PostMapping
     @Override
-    public ResponseEntity<Product> create(@Valid @RequestBody Product product){
+    public ResponseEntity<Product> create(@RequestHeader(value = "Authorization") String token, @Valid @RequestBody Product product){
 
+        if(!authController.validateTokenAdmin(token)){
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
         return productService.create(product).map(user1 -> new ResponseEntity<>(user1, HttpStatus.CREATED))
                 .orElse(new ResponseEntity<>(HttpStatus.BAD_REQUEST));
     }
@@ -64,7 +68,7 @@ public class ProductControllerImpl implements ProductController {
     @Override
     public ResponseEntity delete(@RequestHeader(value = "Authorization") String token, @NotNull @PathVariable("productId") final Long productId){
 
-        if(!validateToken(token)){
+        if(!authController.validateTokenAdmin(token)){
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
         if((productService.getById(productId)) == null) {
@@ -78,10 +82,6 @@ public class ProductControllerImpl implements ProductController {
         }
     }
 
-    private boolean validateToken(String token){
-        String userId = jwtUtil.getKey(token);
-        return userId != null;
-    }
     
     
 }

@@ -16,7 +16,7 @@ public interface ProductController {
     ResponseEntity<Product> getById(@RequestHeader(value = "Authorization") String token, @NotNull @PathVariable("productId") Long productId);
 
     @PostMapping
-    ResponseEntity<Product> create(@Valid @RequestBody Product product);
+    ResponseEntity<Product> create(@RequestHeader(value = "Authorization") String token, @Valid @RequestBody Product product);
 
     @DeleteMapping("/{productId}")
     ResponseEntity delete(@RequestHeader(value = "Authorization") String token, @NotNull @PathVariable("productId") Long productId);
