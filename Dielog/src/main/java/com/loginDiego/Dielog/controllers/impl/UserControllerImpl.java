@@ -1,5 +1,6 @@
 package com.loginDiego.Dielog.controllers.impl;
 
+import com.loginDiego.Dielog.controllers.AuthController;
 import com.loginDiego.Dielog.controllers.UserController;
 import com.loginDiego.Dielog.models.User;
 import com.loginDiego.Dielog.service.UserService;
@@ -21,13 +22,13 @@ public class UserControllerImpl implements UserController {
 
     //properties
     private final UserService userService;
-    private final JWTUtil jwtUtil;
+    private AuthController authController;
     //
 
     @GetMapping
     @Override
     public ResponseEntity<List<User>> getAll(@RequestHeader(value = "Authorization") String token){
-        if(!validateToken(token)){
+        if(!authController.validateTokenUser(token)){
             return new ResponseEntity<>(HttpStatus.NON_AUTHORITATIVE_INFORMATION);
         }
         return new ResponseEntity<>(userService.getAll(), HttpStatus.OK);
@@ -43,7 +44,7 @@ public class UserControllerImpl implements UserController {
         //}else{
         //    return user;
         //}
-        if(!validateToken(token)){
+        if(!authController.validateTokenUser(token)){
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
         return userService.getById(userId)
@@ -64,7 +65,7 @@ public class UserControllerImpl implements UserController {
     @Override
     public ResponseEntity delete(@RequestHeader(value = "Authorization") String token, @NotNull @PathVariable("userId") final Long userId){
 
-        if(!validateToken(token)){
+        if(!authController.validateTokenAdmin(token)){
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
         if((userService.getById(userId)) == null) {
@@ -76,10 +77,5 @@ public class UserControllerImpl implements UserController {
                 return new ResponseEntity<>(HttpStatus.FORBIDDEN);
             }
         }
-    }
-
-    private boolean validateToken(String token){
-        String userId = jwtUtil.getKey(token);
-        return userId != null;
     }
 }

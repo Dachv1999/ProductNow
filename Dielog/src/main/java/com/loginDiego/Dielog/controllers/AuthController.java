@@ -30,4 +30,15 @@ public class AuthController {
         }
     }
 
+    public boolean validateTokenUser(String token){
+        String userId = jwtUtil.getKey(token);
+        return userId != null;
+    }
+
+    public boolean validateTokenAdmin(String token){
+        String userId = jwtUtil.getKey(token);
+        String admin = jwtUtil.getValue(token);
+        return userId != null || admin != null;
+    }
+
 }
